@@ -20,6 +20,7 @@
 	<ExportDir>.\export</ExportDir>
 	<!-- Uncomment this to generate a documentation file to be included with the mod -->
 	<DocumentationFile>$(OutputPath)\$(AssemblyTitle).xml</DocumentationFile>
+  <noWarn>CS1591</noWarn>
   </PropertyGroup>
   <Target Name="CopyMod" AfterTargets="PostBuildEvent">
     <RemoveDir Condition="Exists('$(ExportDir)/$(TargetName)/')" Directories="$(ExportDir)/$(TargetName)/" />
