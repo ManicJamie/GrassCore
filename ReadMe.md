@@ -1,0 +1,22 @@
+# GrassCore
+
+A core mod allowing downstream mods to register grass cut events & prevent cut grass from reappearing.
+
+Most of the logic, including the grass list & cut detection, have been lifted directly from GrassyKnight.
+
+## Interface
+In your `Initialize`, set one or more of the flags;
+```cs
+WeedKillerEnabled // Prevents cut grass from respawning.
+DisconnectWeedKiller // Disconnects WeedKiller from the internal cut grass dict, allowing downstream mods to modify.
+UniqueCutsEnabled // Invoke UniqueGrassWasCut when a new grass is cut.
+CutsEnabled // Invoke GrassWasCut when grass is cut.
+RawCutsEnabled // Invoke Raw_GrassWasCut when any grass-like object is cut.
+```
+Note that setting `UniqueCutsEnabled -> CutsEnabled -> RawCutsEnabled` will cause all upstream flags to be set.
+
+Events are invoked under `GrassEventDispatcher`, except for `GrassRegister.OnStatsChanged`. All events under `GrassEventDispatcher` have the following delegate;
+```cs
+public delegate void GrassWasCut_EventHandler(GrassKey key);
+```
+GrassKey is a struct of SceneName, ObjectName and Position (as a Vector2).
