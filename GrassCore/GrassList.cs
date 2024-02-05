@@ -22,7 +22,7 @@ namespace GrassCore
     //     was added (only cuttable if you don't have wings yet).
     static class GrassList {
         /// <summary>
-        /// Check a grass object against the grass set & alias set.
+        /// Check a grass object against the grass set and alias set.
         /// </summary>
         public static bool Contains(GrassKey key) 
         { 
@@ -30,7 +30,7 @@ namespace GrassCore
             return Aliases.ContainsKey(key);
         }
         /// <summary>
-        /// Check a grass object against the grass set & alias set.
+        /// Check a grass object against the grass set and alias set.
         /// </summary>
         public static bool Contains(GameObject go) => Contains(new GrassKey(go));
 
