@@ -11,7 +11,7 @@ namespace GrassCore
 {
     public class GrassCore : Mod
     {
-        internal static GrassCore Instance;
+        public static GrassCore Instance;
 
         public readonly GrassCutListener grassCutListener;
         public readonly WeedKiller weedKiller;
