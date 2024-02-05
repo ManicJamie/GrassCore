@@ -16,7 +16,7 @@ namespace GrassCore
         public readonly GrassCutListener grassCutListener;
         public readonly WeedKiller weedKiller;
         public readonly GrassEventDispatcher grassEventDispatcher;
-        public readonly GrassRegister grassRegister;
+        public readonly GrassRegister_Global grassRegister;
 
         private readonly WeedKillerEnableHandler weedKillerEnableHandler = new();
         private readonly DisconnectWeedKillerHandler disconnectWeedKillerHandler = new();
@@ -49,13 +49,13 @@ namespace GrassCore
 
         public MySaveData OnSaveLocal() => new MySaveData
         {
-            serializedGrassDB = grassRegister.Serialize()
+            serializedGrassRegister = grassRegister.Serialize()
         };
 
         public void OnLoadLocal(MySaveData value)
         {
             grassRegister.Clear();
-            grassRegister.AddSerializedData(value.serializedGrassDB);
+            grassRegister.AddSerializedData(value.serializedGrassRegister);
         }
 
         public override string GetVersion() => GetType().Assembly.GetName().Version.ToString();
@@ -66,7 +66,7 @@ namespace GrassCore
             grassEventDispatcher = new GrassEventDispatcher();
             grassCutListener = new GrassCutListener();
             weedKiller = new WeedKiller();
-            grassRegister = new GrassRegister();
+            grassRegister = new GrassRegister_Global();
         }
 
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
@@ -75,8 +75,8 @@ namespace GrassCore
             weedKiller.Blacklist = grassRegister._grassStates; // Connect WeedKiller - can be disconnected by setting DisconnectWeedKiller.
             Log("Initialized");
 #if DEBUG
-            WeedkillerEnabled = true;
-            UniqueCutsEnabled = true;
+            //WeedkillerEnabled = true;
+            //UniqueCutsEnabled = true;
 #endif
         }
 

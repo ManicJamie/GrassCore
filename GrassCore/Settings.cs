@@ -2,6 +2,6 @@
 {
     public class MySaveData
     {
-        public string serializedGrassDB;
+        public string serializedGrassRegister;
     }
 }

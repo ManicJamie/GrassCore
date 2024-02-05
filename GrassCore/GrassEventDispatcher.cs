@@ -48,9 +48,9 @@ namespace GrassCore
 
         public void Check_Unique(GrassKey key)
         {
-            if (!GrassRegister.Instance.Contains(key))
+            if (!GrassRegister_Global.Instance.Contains(key))
             {
-                if (!GrassRegister.Instance.TryCut(key)) { GrassCore.Instance.LogError($"Tried to cut grass {key} but failed!"); }
+                if (!GrassRegister_Global.Instance.TryCut(key)) { GrassCore.Instance.LogError($"Tried to cut grass {key} but failed!"); }
                 UniqueGrassWasCut?.Invoke(key);
             }
         }

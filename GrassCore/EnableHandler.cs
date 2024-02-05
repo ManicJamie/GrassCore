@@ -101,7 +101,7 @@ namespace GrassCore
 
         public override void OnDisable()
         {
-            WeedKiller.Instance.Blacklist = GrassRegister.Instance._grassStates; // Go back to default connected behaviour
+            WeedKiller.Instance.Blacklist = GrassRegister_Global.Instance._grassStates; // Go back to default connected behaviour
         }
 
     }

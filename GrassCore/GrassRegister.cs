@@ -6,12 +6,24 @@ using System.Threading.Tasks;
 
 namespace GrassCore
 {
+    /* 
+     Global GrassRegister used internally. Downstream applications may implement the base GrassRegister.
+     */
+    public class GrassRegister_Global : GrassRegister
+    {
+        public static GrassRegister Instance;
+        public GrassRegister_Global()
+        {
+            if (Instance == null) { Instance = this; }
+        }
+    }
+
     /*
      Largely based on GrassyKnight.GrassDB
      */
     public class GrassRegister
     {
-        public static GrassRegister Instance;
+        
 
         // Maps from scene name to a dictionary mapping from grass key to
         // state. The separation of grass by scene is done only for query
@@ -27,10 +39,7 @@ namespace GrassCore
         /// </summary>
         public event EventHandler OnStatsChanged;
 
-        public GrassRegister()
-        {
-            Instance = this;
-        }
+        
 
         private void TryAddScene(string sceneName)
         {
@@ -191,7 +200,12 @@ namespace GrassCore
         // A special state that grass might enter if it is struck with the
         // nail but not actually cut in game.
         ShouldBeCut,
-        Cut,
+        Cut
+    }
+
+    public static class GrassStateExtensions
+    {
+        public static bool IsCut(this GrassState state) => state != GrassState.Uncut;
     }
 
     public class GrassStats
