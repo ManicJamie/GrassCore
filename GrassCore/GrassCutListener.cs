@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static GrassCore.GrassCore;
 using UnityEngine;
+using System.Reflection;
 
 namespace GrassCore
 {
@@ -32,15 +33,15 @@ namespace GrassCore
          * This works for UNIQUE, but we get multiple RAW/GRASS on some grass!
          * 
          * Some grasses have 2 or more of the Grass-related components, so will call shouldCut multiple times for each cut event.
-         * (Reasonably) Assuming OnTriggerEnter2D is called for all components on the GameObject prior to that on another GameObject,
+         * (Reasonably) Assuming OnTriggerEnter2D is called for all components on the GameObject before another GameObject,
          * we can simply remember the last grass cut & only fire an event if it's unique. 
          * 
          * We set an expiry to ensure if we go back to that grass later (ie reload scene), we still correctly get a RAW event.
          * This allows us to avoid comparing against an overall state (which UNIQUE does),
          * which downstream mods may want to manage, and avoids a heavy-ish dict lookup.
          * 
-         * WARN: Some grass components do not disable themselves & call ShouldCut even after being cut, so RAW/GRASS may be called when slashing an already cut grass.
-         * //TODO: read these components' internal state before firing our event, so we know for sure that a RAW or GRASS event is an actual cut.
+         * GrassBehaviour also checks shouldCut even when it is already cut; we reflect the private isCut field &
+         * check before invoking RAW to avoid getting spurious events after a grass is already cut.
          */
         private GrassKey currentCut;
         private float expiry;
@@ -52,7 +53,7 @@ namespace GrassCore
         where Component : MonoBehaviour
         where OrigFunc : MulticastDelegate
         {
-            var context = new GrassyBox(self.gameObject); // Store grass object for ShouldCut static hook
+            GrassyBox.Component = self; // Store grass component for ShouldCut to grab
             try
             {
                 // Call the original function (which may call our ShouldCut static hook)
@@ -60,9 +61,14 @@ namespace GrassCore
             }
             finally
             {
-                context.Dispose(); // Empty grass box so we don't accidentally pass ShouldCut the wrong grass!
+                GrassyBox.Dispose(); // Empty grass box so we don't accidentally pass ShouldCut the wrong grass!
             }
         }
+
+        /// <summary>
+        /// Reflected private field of GrassBehaviour.isCut for checking if the GrassBehaviour is supposed to be silent
+        /// </summary>
+        private static readonly FieldInfo isCutFI = typeof(GrassBehaviour).GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Where((f) => f.Name == "isCut").First();
 
         public bool HandleShouldCut(On.GrassCut.orig_ShouldCut orig, Collider2D collision)
         {
@@ -70,15 +76,25 @@ namespace GrassCore
 
             if (shouldCut)
             {
-                GameObject grass = GrassyBox.GetValue();
-                GrassKey key = new(grass);
-                
-                // Check this isn't another component on the same object
+                MonoBehaviour component = GrassyBox.Component;
+                GrassKey key = new(component.gameObject);
+                // Check for GrassBehaviour to avoid cut events on grass that's already been cut
+                if (component.GetType() == typeof(GrassBehaviour))
+                {
+                    GrassBehaviour gb = (GrassBehaviour)component;
+                    bool isCut = (bool)isCutFI.GetValue(gb);
+                    if (isCut) {
+                        GrassCore.Instance.LogFine($"Not firing RAW on false GrassBehaviour event for {key}");
+                        return shouldCut; 
+                    } 
+                }
+
+                // Check this isn't another component on the same object as the last ShouldCut call
                 if (currentCut == key)
                 {
                     if (Time.fixedTime < expiry) 
                     {
-                        GrassCore.Instance.LogDebug($"Not firing RAW on duplicate grass event for {key}");
+                        GrassCore.Instance.LogFine($"Not firing RAW on duplicate grass event for {key}");
                         return shouldCut;
                     }
                 }
@@ -86,16 +102,9 @@ namespace GrassCore
                 currentCut = key;
                 expiry = Time.fixedTime + cutDelay;
                 GrassEventDispatcher.Raw_GrassWasCut_Invoke(key);
-                
             }
 
             return shouldCut;
-        }
-
-        private bool ShouldCut(Collider2D collision) // Mirror of static GrassCut.ShouldCut
-        {
-            return (collision.tag == "Nail Attack") || (collision.tag == "Sharp Shadow") ||
-                    (collision.tag == "HeroBox" && HeroController.instance.cState.superDashing);
         }
     }
 
@@ -103,42 +112,21 @@ namespace GrassCore
     // A handy box to store some grass in. Used to store a reference to the
     // grass that ShouldCut is getting called for because ShouldCut is a
     // static function.
-    class GrassyBox : IDisposable
+    static class GrassyBox
     {
-        private static GameObject _value = null;
-        private static bool _hasValue = false;
+        private static MonoBehaviour _component = null;
 
-        public static GameObject GetValue()
-        {
-            if (_hasValue)
-            {
-                return _value;
-            }
-            else
-            {
-                throw new InvalidOperationException("Nothing in box");
+        public static MonoBehaviour Component { get {
+                if (_component != null) { return _component; }
+                else { throw new InvalidOperationException("Nothing in box"); }
+            } set {
+                _component = value;
             }
         }
 
-        public GrassyBox(GameObject value)
+        public static void Dispose()
         {
-            if (_hasValue)
-            {
-                GrassCore.Instance.LogError(
-                    $"Already have value in box (current value is {_value}, " +
-                    $"trying to store value {value}).");
-            }
-            else
-            {
-                _value = value;
-                _hasValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            _value = null;
-            _hasValue = false;
+            _component = null;
         }
     }
 }
