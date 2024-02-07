@@ -8,12 +8,14 @@ Most of the logic, including the grass list & cut detection, have been lifted di
 In your `Initialize`, set one or more of the flags;
 ```cs
 WeedKillerEnabled // Prevents cut grass from respawning.
-DisconnectWeedKiller // Disconnects WeedKiller from the internal cut grass dict, allowing downstream mods to modify.
+DisconnectWeedKiller // Disconnects WeedKiller from the internal cut grass dict, allowing downstream mods to bind their own.
 UniqueCutsEnabled // Invoke UniqueGrassWasCut when a new grass is cut.
 CutsEnabled // Invoke GrassWasCut when grass is cut.
 RawCutsEnabled // Invoke Raw_GrassWasCut when any grass-like object is cut.
 ```
-Note that setting `UniqueCutsEnabled -> CutsEnabled -> RawCutsEnabled` will cause all upstream flags to be set.
+Setting `UniqueCutsEnabled -> CutsEnabled -> RawCutsEnabled` will cause all upstream events to be enabled, so you only need to enable the most specific flag. 
+
+You can safely unset these flags when not required; flags other mods have also set will be maintained.
 
 Events are invoked under static `GrassEventDispatcher`, except for `GrassRegister_Global.OnStatsChanged`. All events under `GrassEventDispatcher` have the following delegate;
 ```cs
