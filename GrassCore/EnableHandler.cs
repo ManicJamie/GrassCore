@@ -10,14 +10,11 @@ namespace GrassCore
     public abstract class EnableHandler
     {
         public static List<EnableHandler> all = new();
-
         public HashSet<Type> users = new();
+
         public abstract bool Get();
-
-        protected delegate void ParamsAction(params object[] arguments);
-
-        public abstract void OnEnable();
-        public abstract void OnDisable();
+        protected abstract void OnEnable();
+        protected abstract void OnDisable();
 
         public EnableHandler()
         {
@@ -48,36 +45,24 @@ namespace GrassCore
             }
         }
 
-        public static List<bool> GetBools()
-        {
-            List<bool> temp = new();
-            foreach (var enable in all)
-            {
-                temp.Add(enable.Get());
-            }
-            return temp;
-        }
+        protected static List<bool> GetBools() => new List<bool>(all.Select((e) => e.Get()));
 
         public static void Log(object message) => GrassCore.Instance.Log(message);
     }
 
     public class WeedKillerEnableHandler : EnableHandler
     {
-        public static EnableHandler Instance;
-
-        public WeedKillerEnableHandler() : base()
-        {
-            Instance = this;
-        }
+        private static WeedKillerEnableHandler instance;
+        public static WeedKillerEnableHandler Instance { get { instance ??= new WeedKillerEnableHandler(); return instance; } }
 
         public override bool Get() => users.Count > 0;
 
-        public override void OnEnable()
+        protected override void OnEnable()
         {
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += WeedKiller.Instance.DestroyBlacklistedGrass;
         }
 
-        public override void OnDisable()
+        protected override void OnDisable()
         {
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= WeedKiller.Instance.DestroyBlacklistedGrass;
         }
@@ -85,21 +70,17 @@ namespace GrassCore
 
     public class DisconnectWeedKillerHandler : EnableHandler
     {
-        public static EnableHandler Instance;
-
-        public DisconnectWeedKillerHandler() : base()
-        {
-            Instance = this;
-        }
+        private static DisconnectWeedKillerHandler instance;
+        public static DisconnectWeedKillerHandler Instance { get { instance ??= new DisconnectWeedKillerHandler(); return instance; } }
 
         public override bool Get() => users.Count > 0;
 
-        public override void OnEnable()
+        protected override void OnEnable()
         {
             WeedKiller.Instance.Blacklist = new(); // This looks stupid, but downstream can use this dict as desired as long as they don't disable it themselves.
         }
 
-        public override void OnDisable()
+        protected override void OnDisable()
         {
             WeedKiller.Instance.Blacklist = GrassRegister_Global.Instance._grassStates; // Go back to default connected behaviour
         }
@@ -108,105 +89,66 @@ namespace GrassCore
 
     public class UniqueCutEnableHandler : EnableHandler
     {
-        public static EnableHandler Instance;
-
-        public UniqueCutEnableHandler() : base()
-        {
-            Instance = this;
-        }
+        private static UniqueCutEnableHandler instance;
+        public static UniqueCutEnableHandler Instance { get { instance ??= new UniqueCutEnableHandler(); return instance; } }
 
         public override bool Get() => users.Count > 0;
 
-        public override void OnEnable()
+        protected override void OnEnable()
         {
-            GrassEventDispatcher.Instance.GrassWasCut += GrassEventDispatcher.Instance.Check_Unique;
-
-            #if DEBUG
-            GrassEventDispatcher.Instance.UniqueGrassWasCut += GrassCore.Instance.Log_Unique;
-            #endif
+            GrassEventDispatcher.GrassWasCut += GrassEventDispatcher.Check_Unique;
         }
 
-        public override void OnDisable()
+        protected override void OnDisable()
         {
-            GrassEventDispatcher.Instance.GrassWasCut -= GrassEventDispatcher.Instance.Check_Unique;
-
-            #if DEBUG
-            GrassEventDispatcher.Instance.UniqueGrassWasCut -= GrassCore.Instance.Log_Unique;
-            #endif
+            GrassEventDispatcher.GrassWasCut -= GrassEventDispatcher.Check_Unique;
         }
     }
 
     public class CutsEnableHandler : EnableHandler
     {
-        public static EnableHandler Instance;
-
-        public CutsEnableHandler() : base()
-        {
-            Instance = this;
-        }
+        private static CutsEnableHandler instance;
+        public static CutsEnableHandler Instance { get { instance ??= new CutsEnableHandler(); return instance; } }
 
         public override bool Get() => users.Count > 0 || UniqueCutEnableHandler.Instance.Get();
 
-        public override void OnEnable()
+        protected override void OnEnable()
         {
-            GrassEventDispatcher.Instance.Raw_GrassWasCut += GrassEventDispatcher.Instance.Filter_RawGrassCut;
-
-            #if DEBUG
-            GrassEventDispatcher.Instance.GrassWasCut += GrassCore.Instance.Log_Grass;
-            #endif
+            GrassEventDispatcher.Raw_GrassWasCut += GrassEventDispatcher.Check_IsGrass;
         }
 
-        public override void OnDisable()
+        protected override void OnDisable()
         {
-            GrassEventDispatcher.Instance.Raw_GrassWasCut -= GrassEventDispatcher.Instance.Filter_RawGrassCut;
-
-            #if DEBUG
-            GrassEventDispatcher.Instance.GrassWasCut -= GrassCore.Instance.Log_Grass;
-            #endif
+            GrassEventDispatcher.Raw_GrassWasCut -= GrassEventDispatcher.Check_IsGrass;
         }
     }
 
     public class RawCutsEnableHandler : EnableHandler
     {
-        public static EnableHandler Instance;
-
-        public RawCutsEnableHandler() : base()
-        {
-            Instance = this;
-        }
+        private static RawCutsEnableHandler instance;
+        public static RawCutsEnableHandler Instance { get { instance ??= new RawCutsEnableHandler(); return instance; } }
 
         public override bool Get() => users.Count > 0 || CutsEnableHandler.Instance.Get();
 
-        public override void OnEnable()
+        protected override void OnEnable()
         {
-            // Grass cut handling from GrassyKnight. These ensure the static GrassyBox is filled when ShouldCut is called.
-            On.GrassBehaviour.OnTriggerEnter2D += GrassCutListener.Instance.HandleGrassCollisionEnter;
+            // GrassBox fillers
             On.GrassCut.OnTriggerEnter2D += GrassCutListener.Instance.HandleGrassCollisionEnter;
             On.TownGrass.OnTriggerEnter2D += GrassCutListener.Instance.HandleGrassCollisionEnter;
             On.GrassSpriteBehaviour.OnTriggerEnter2D += GrassCutListener.Instance.HandleGrassCollisionEnter;
-
-            // Triggered when real grass is being cut for real
+            On.GrassBehaviour.OnTriggerEnter2D += GrassCutListener.Instance.HandleGrassCollisionEnter;
+            // Cut dispatcher - we need to track grass state
             On.GrassCut.ShouldCut += GrassCutListener.Instance.HandleShouldCut;
-
-            #if DEBUG
-            GrassEventDispatcher.Instance.Raw_GrassWasCut += GrassCore.Instance.Log_Raw_Grass;
-            #endif
         }
 
-        public override void OnDisable()
+        protected override void OnDisable()
         {
-            
-            On.GrassBehaviour.OnTriggerEnter2D -= GrassCutListener.Instance.HandleGrassCollisionEnter;
             On.GrassCut.OnTriggerEnter2D -= GrassCutListener.Instance.HandleGrassCollisionEnter;
             On.TownGrass.OnTriggerEnter2D -= GrassCutListener.Instance.HandleGrassCollisionEnter;
             On.GrassSpriteBehaviour.OnTriggerEnter2D -= GrassCutListener.Instance.HandleGrassCollisionEnter;
+            On.GrassBehaviour.OnTriggerEnter2D -= GrassCutListener.Instance.HandleGrassCollisionEnter;
 
-            
             On.GrassCut.ShouldCut -= GrassCutListener.Instance.HandleShouldCut;
-
-            #if DEBUG
-            GrassEventDispatcher.Instance.Raw_GrassWasCut -= GrassCore.Instance.Log_Raw_Grass;
-            #endif
         }
     }
 }

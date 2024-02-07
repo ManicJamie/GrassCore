@@ -15,8 +15,13 @@ RawCutsEnabled // Invoke Raw_GrassWasCut when any grass-like object is cut.
 ```
 Note that setting `UniqueCutsEnabled -> CutsEnabled -> RawCutsEnabled` will cause all upstream flags to be set.
 
-Events are invoked under `GrassEventDispatcher`, except for `GrassRegister.OnStatsChanged`. All events under `GrassEventDispatcher` have the following delegate;
+Events are invoked under static `GrassEventDispatcher`, except for `GrassRegister_Global.OnStatsChanged`. All events under `GrassEventDispatcher` have the following delegate;
 ```cs
 public delegate void GrassWasCut_EventHandler(GrassKey key);
 ```
 GrassKey is a struct of SceneName, ObjectName and Position (as a Vector2).
+
+## Todo
+
+- [ ] Add unique detection for other grass-likes (think this might just be drapes, though implementing a version of GrassyKnight's LawnMower to verify wouldn't hurt)
+- [ ] Add support for Breakable? maybe dividing dynamically by NonBouncer

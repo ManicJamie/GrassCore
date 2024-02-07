@@ -11,11 +11,8 @@ namespace GrassCore
      */
     public class GrassRegister_Global : GrassRegister
     {
-        public static GrassRegister Instance;
-        public GrassRegister_Global()
-        {
-            if (Instance == null) { Instance = this; }
-        }
+        private static GrassRegister_Global instance;
+        public static GrassRegister_Global Instance { get { instance ??= new GrassRegister_Global(); return instance; } }
     }
 
     /*
@@ -197,14 +194,15 @@ namespace GrassCore
     public enum GrassState
     {
         Uncut,
-        // A special state that grass might enter if it is struck with the
-        // nail but not actually cut in game.
-        ShouldBeCut,
+        ShouldBeCut, // Used by GrassyKnight for unhittable grass detection, kept for compatibility
         Cut
     }
 
     public static class GrassStateExtensions
     {
+        /// <summary>
+        /// Convenience method for !<see cref="GrassState.Uncut"/>
+        /// </summary>
         public static bool IsCut(this GrassState state) => state != GrassState.Uncut;
     }
 

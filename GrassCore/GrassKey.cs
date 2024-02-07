@@ -11,6 +11,7 @@ namespace GrassCore
     /*
     This struct is more or less lifted from itsjohncs/flibber-hk/GrassyKnight, with various unnecessary methods stripped & restructured slightly for ease of use.
     */
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
     public readonly struct GrassKey
     {
         public readonly string SceneName;
@@ -31,6 +32,10 @@ namespace GrassCore
 
         public override int GetHashCode() => (SceneName, ObjectName, Position).GetHashCode();
         public override string ToString() => $"{SceneName}/{ObjectName} ({Position.x}, {Position.y})";
+
+        public static bool operator ==(GrassKey left, GrassKey right) => left.Equals(right);
+
+        public static bool operator !=(GrassKey left, GrassKey right) => !left.Equals(right);
 
         // The size of the arrays Serialize returns and Deserialize expects
         public const int NumSerializationTokens = 4;

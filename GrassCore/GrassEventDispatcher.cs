@@ -7,23 +7,15 @@ using UnityEngine;
 
 namespace GrassCore
 {
-    public class GrassEventDispatcher
+    public static class GrassEventDispatcher
     {
-
-        public static GrassEventDispatcher Instance;
-
-        public GrassEventDispatcher() 
-        {
-            Instance = this;
-        }
-
         public delegate void GrassWasCut_EventHandler(GrassKey key);
         /// <summary>
         /// Called whenever a grass-like object was cut.
         /// </summary>
-        public event GrassWasCut_EventHandler Raw_GrassWasCut;
+        public static event GrassWasCut_EventHandler Raw_GrassWasCut;
 
-        public void Raw_GrassWasCut_Invoke(GrassKey key)
+        public static void Raw_GrassWasCut_Invoke(GrassKey key)
         {
             Raw_GrassWasCut?.Invoke(key);
         }
@@ -31,9 +23,9 @@ namespace GrassCore
         /// <summary>
         /// Called whenever a verified grass object was cut.
         /// </summary>
-        public event GrassWasCut_EventHandler GrassWasCut;
+        public static event GrassWasCut_EventHandler GrassWasCut;
 
-        public void Filter_RawGrassCut(GrassKey key)
+        public static void Check_IsGrass(GrassKey key)
         {
             if (GrassList.Contains(key))
             {
@@ -44,9 +36,9 @@ namespace GrassCore
         /// <summary>
         /// Called whenever a previously uncut grass object was cut.
         /// </summary>
-        public event GrassWasCut_EventHandler UniqueGrassWasCut;
+        public static event GrassWasCut_EventHandler UniqueGrassWasCut;
 
-        public void Check_Unique(GrassKey key)
+        public static void Check_Unique(GrassKey key)
         {
             if (!GrassRegister_Global.Instance.Contains(key))
             {

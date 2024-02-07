@@ -8,10 +8,11 @@
     <Product>GrassCore</Product>
     <Description>Core mod powering various Grass-related activities.</Description>
     <Copyright>Public Domain</Copyright>
-    <AssemblyVersion>1.0</AssemblyVersion>
-    <FileVersion>1.0</FileVersion>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <LangVersion>latest</LangVersion>
+	  <Deterministic>false</Deterministic>
   </PropertyGroup>
   <PropertyGroup>
 	<!-- Change this to the path of your modded HK installation -->

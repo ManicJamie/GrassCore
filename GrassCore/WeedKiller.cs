@@ -12,14 +12,10 @@ namespace GrassCore
     /// </summary>
     public class WeedKiller
     {
-        public static WeedKiller Instance { get; set; }
+        private static WeedKiller instance;
+        public static WeedKiller Instance { get { instance ??= new WeedKiller(); return instance; } }
 
         public Dictionary<string, Dictionary<GrassKey, GrassState>> Blacklist = new();
-
-        public WeedKiller() 
-        {
-            Instance = this;
-        }
 
         private List<GameObject> GetGrassInScene()
         {
