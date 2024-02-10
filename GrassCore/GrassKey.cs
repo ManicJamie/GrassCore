@@ -17,15 +17,19 @@ namespace GrassCore
     {
         public readonly string SceneName;
         public readonly string ObjectName;
-        public readonly Vector2 Position;
+        [JsonIgnore]
+        public readonly Vector2 Position { get { return new(X, Y); } }
+        public readonly float X;
+        public readonly float Y;
 
-        [JsonConstructor]
         public GrassKey(string sceneName, string objectName, Vector2 Pos)
         {
             SceneName = sceneName;
             ObjectName = objectName;
-            Position = Pos;
+            X = Pos.x;
+            Y = Pos.y;
         }
+        [JsonConstructor]
         public GrassKey(string SceneName, string ObjectName, float X, float Y) : this(SceneName, ObjectName, new Vector2(X, Y)) { }
         /// <summary>
         /// Creates a key from a GameObject. Note that Position is downcast to a Vector2, discarding Z height.
