@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ namespace GrassCore
         public readonly string ObjectName;
         public readonly Vector2 Position;
 
+        [JsonConstructor]
         public GrassKey(string sceneName, string objectName, Vector2 Pos)
         {
             SceneName = sceneName;

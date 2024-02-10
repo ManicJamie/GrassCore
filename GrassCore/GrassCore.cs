@@ -85,19 +85,14 @@ namespace GrassCore
             #if DEBUG
             // Self-enable on debug builds
             WeedkillerEnabled = true;
-            CutsEnabled = true;
+            UniqueCutsEnabled = true;
             #endif
         }
 
         /* Utils */
 
-        public static string IndentString(string str, string indent = "... ") => indent + str.Replace("\n", "\n" + indent);
-        public void LogException(string heading, Exception error) => LogError($"{heading}\n{IndentString(error.ToString())}");
-
-        public void Log_Unique(GrassKey key) =>     LogDebug($"UNIQUE | {key}");
-
-        public void Log_Grass(GrassKey key) =>      LogDebug($"GRASS  | {key}");
-
-        public void Log_Raw_Grass(GrassKey key) =>  LogDebug($"CUT    | {key}");
+        internal void Log_Unique(GrassKey key) =>     LogDebug($"UNIQUE | {key}");
+        internal void Log_Grass(GrassKey key) =>      LogDebug($"GRASS  | {key}");
+        internal void Log_Raw_Grass(GrassKey key) =>  LogDebug($"CUT    | {key}");
     }
 }

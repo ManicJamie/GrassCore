@@ -25,5 +25,7 @@ GrassKey is a struct of SceneName, ObjectName and Position (as a Vector2).
 
 ## Todo
 
+- [ ] WeedKiller - consider leaving some GameObjects intact (GrassBehaviours' stems continue to react to grass cuts with slight waves)
 - [ ] Add unique detection for other grass-likes (think this might just be drapes, though implementing a version of GrassyKnight's LawnMower to verify wouldn't hurt)
 - [ ] Add support for Breakable? maybe dividing dynamically by NonBouncer
+- [ ] Maybe port GrassyKnight's compass or HUD? Don't want to make GrassyKnight a dependency of GrassRando if its going to have duplicate logic, after all.

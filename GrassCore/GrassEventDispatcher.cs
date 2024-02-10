@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace GrassCore
 {
+    /// <summary>
+    /// Invokes and dispatches grassy events for downstream users.
+    /// </summary>
     public static class GrassEventDispatcher
     {
         public delegate void GrassWasCut_EventHandler(GrassKey key);
@@ -15,7 +18,7 @@ namespace GrassCore
         /// </summary>
         public static event GrassWasCut_EventHandler Raw_GrassWasCut;
 
-        public static void Raw_GrassWasCut_Invoke(GrassKey key)
+        internal static void Raw_GrassWasCut_Invoke(GrassKey key)
         {
             Raw_GrassWasCut?.Invoke(key);
         }
@@ -25,7 +28,7 @@ namespace GrassCore
         /// </summary>
         public static event GrassWasCut_EventHandler GrassWasCut;
 
-        public static void Check_IsGrass(GrassKey key)
+        internal static void Check_IsGrass(GrassKey key)
         {
             if (GrassList.Contains(key))
             {
@@ -38,7 +41,7 @@ namespace GrassCore
         /// </summary>
         public static event GrassWasCut_EventHandler UniqueGrassWasCut;
 
-        public static void Check_Unique(GrassKey key)
+        internal static void Check_Unique(GrassKey key)
         {
             if (!GrassRegister_Global.Instance.Contains(key))
             {
