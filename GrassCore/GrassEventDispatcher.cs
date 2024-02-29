@@ -45,7 +45,7 @@ namespace GrassCore
         {
             if (!GrassRegister_Global.Instance.Contains(key))
             {
-                if (!GrassRegister_Global.Instance.TryCut(key)) { GrassCore.Instance.LogError($"Tried to cut grass {key} but failed!"); }
+                if (!GrassRegister_Global.Instance.TryCut(key)) { GrassCoreMod.Instance.LogDebug($"Tried to cut grass {key} but failed!"); }
                 UniqueGrassWasCut?.Invoke(key);
             }
         }

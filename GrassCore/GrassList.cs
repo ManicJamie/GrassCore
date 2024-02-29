@@ -20,7 +20,7 @@ namespace GrassCore
     //     that the grass was switched out if you had/didn't-have wings.
     //     Aliases were added for the swapped grass a missing piece of grass
     //     was added (only cuttable if you don't have wings yet).
-    static class GrassList {
+    public static class GrassList {
         /// <summary>
         /// Check a grass object against the grass set and alias set.
         /// </summary>

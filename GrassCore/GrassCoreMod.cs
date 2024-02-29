@@ -10,10 +10,10 @@ using UObject = UnityEngine.Object;
 
 namespace GrassCore
 {
-    public class GrassCore : Mod
+    public class GrassCoreMod : Mod
     {
-        private static GrassCore instance;
-        public static GrassCore Instance { get { instance ??= new GrassCore(); return instance; } }
+        private static GrassCoreMod instance;
+        public static GrassCoreMod Instance { get { instance ??= new GrassCoreMod(); return instance; } }
 
         // Module singletons
         public readonly GrassCutListener grassCutListener = GrassCutListener.Instance;
@@ -69,7 +69,7 @@ namespace GrassCore
 
         /* Constructors */
 
-        public GrassCore() : base("GrassCore")
+        public GrassCoreMod() : base("GrassCore")
         {
             // All the singleton constructors are above.
         }

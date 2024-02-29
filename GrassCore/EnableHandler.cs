@@ -47,7 +47,7 @@ namespace GrassCore
 
         protected static List<bool> GetBools() => new List<bool>(all.Select((e) => e.Get()));
 
-        public static void Log(object message) => GrassCore.Instance.Log(message);
+        public static void Log(object message) => GrassCoreMod.Instance.Log(message);
     }
 
     public class WeedKillerEnableHandler : EnableHandler

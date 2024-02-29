@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static GrassCore.GrassCore;
+using static GrassCore.GrassCoreMod;
 using UnityEngine;
 using System.Reflection;
 
@@ -84,7 +84,7 @@ namespace GrassCore
                     GrassBehaviour gb = (GrassBehaviour)component;
                     bool isCut = (bool)isCutFI.GetValue(gb);
                     if (isCut) {
-                        GrassCore.Instance.LogFine($"Not firing RAW on false GrassBehaviour event for {key}");
+                        GrassCoreMod.Instance.LogFine($"Not firing RAW on false GrassBehaviour event for {key}");
                         return shouldCut; 
                     } 
                 }
@@ -94,7 +94,7 @@ namespace GrassCore
                 {
                     if (Time.fixedTime < expiry) 
                     {
-                        GrassCore.Instance.LogFine($"Not firing RAW on duplicate grass event for {key}");
+                        GrassCoreMod.Instance.LogFine($"Not firing RAW on duplicate grass event for {key}");
                         return shouldCut;
                     }
                 }

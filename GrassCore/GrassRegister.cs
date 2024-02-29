@@ -77,9 +77,9 @@ namespace GrassCore
                 _globalStats.HandleUpdate(oldState, newState);
                 OnStatsChanged?.Invoke(this, EventArgs.Empty);
 
-                GrassCore.Instance.LogDebug(
+                GrassCoreMod.Instance.LogDebug(
                     $"Updated state of '{canonical}' to {newState} (was {oldState})");
-                GrassCore.Instance.LogFine(
+                GrassCoreMod.Instance.LogFine(
                     $"... Serialized key: {String.Join(";", canonical.Serialize())}");
 
                 return true;
